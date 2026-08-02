@@ -1,13 +1,10 @@
 # Bait Intentions
 
-A USB Rubber Ducky payload for running honest USB drop tests.
+A USB Rubber Ducky payload for running honest USB drop tests (baiting).
 
-You scatter a few of these around the office. Someone picks one up, plugs it in, and instead of getting owned they get signed up for security awareness training — and a note lands in the IT helpdesk queue saying so. Nobody gets hurt, nobody gets shamed, and you get real numbers on how your people actually behave.
-
-That's the whole thing. It types a URL, it drafts an email. No shells, no persistence, no exfil.
+Place a few of these around the office. Someone picks one up, plugs it in, and instead of getting pwned they get signed up for security awareness training — and a note lands in the IT helpdesk queue saying so. That it, it types a URL, it drafts an email. No shells, no persistence, no exfil.
 
 ## What actually happens
-
 Someone plugs in the drive. In about three seconds:
 
 1. The Ducky figures out whether it's on Windows or macOS and waits only as long as that machine needs to be ready for keystrokes.
@@ -19,7 +16,7 @@ Step 4 is deliberate, and we'll come back to it.
 
 ## Setup
 
-You need a [USB Rubber Ducky (Mk II)](https://shop.hak5.org/products/usb-rubber-ducky) and [PayloadStudio](https://payloadstudio.hak5.org).
+You need a [USB Rubber Ducky (Mk II)](https://shop.hak5.org/products/usb-rubber-ducky) and [PayloadStudio](https://payloadstudio.hak5.org) or [PayloadStudioPro](https://payloadstudio.hak5.org/pro/). 
 
 1. Open `payload.txt` in PayloadStudio.
 2. Find the line that reads `EXTENSION PASSIVE_WINDOWS_DETECT`, retype it, and accept the autocomplete. This pulls in the official extension body, which is about forty lines that don't belong in version control. **The payload won't work without this step.**
@@ -29,7 +26,6 @@ You need a [USB Rubber Ducky (Mk II)](https://shop.hak5.org/products/usb-rubber-
 One card does both operating systems. There's no separate Windows build and Mac build — the OS check happens at runtime, inside the one binary.
 
 ### The three things you need to change
-
 Everything you'll want to touch is at the top of the file under a big `EDIT THESE THREE THINGS` banner.
 
 **Your training portal.** Point `SIGNUP_URL` at your own signup page.
@@ -62,19 +58,17 @@ Compiles to about 1 KB.
 
 ## Known limits
 
-**macOS doesn't get the fast start.** Macs don't report lock-key state back to the keyboard, so there's no readiness signal to wait for and the extension falls back to its 3000 ms cap. There's no fix for this at the HID level. The upside is that the silence itself is how we know we're not on Windows.
-
-**It enumerates as an Apple keyboard.** `VID_05AC PID_021E` is non-negotiable if you want Mac support — without it macOS throws the Keyboard Setup Assistant over the top of everything and nothing else runs. Windows is fine with it via the generic HID driver, though a Windows-only build could shave a little more by spoofing a keyboard Windows already has cached.
-
+**macOS doesn't get the fast start.**
+**It enumerates as an Apple keyboard.** 
 **It doesn't press Send.** The send shortcut differs by mail client, and firing the wrong key combination into the wrong app is a good way to do something you didn't intend. Three options are commented at the bottom of the payload — uncomment one once you know what your fleet runs.
 
-Honestly, leaving it unsent may be the better design regardless. Someone reading a pre-written "I plugged in a USB drive I found" email and clicking Send themselves is a sharper lesson than a message that quietly vanishes.
+It has been argued that leaving it unsent may be the better design regardless. Someone reading a pre-written "I plugged in a USB drive I found" email and clicking Send themselves is a sharper lesson than a message that quietly vanishes.
 
 **Timings are a starting point, not a truth.** Every number in the config block came from one setup. Test on the oldest, slowest machine in the building before you scatter anything.
 
 ## Before you use this
 
-Only run drop tests against an organisation that has authorised you to do so, in writing, with a defined scope. Get that sorted before the drives hit the carpet.
+Only run drop tests against an organization that has authorized you to do so, in writing, with a defined scope. Get that sorted before the drives hit the carpet.
 
 Give some thought to how the results get used, too. A drop test measures how easy it is for a normal person to be curious at work — it doesn't tell you anything about who's careless. Handing management a list of names is a good way to make sure nobody ever reports the next thing they plug in. Report the rate, not the roster.
 
