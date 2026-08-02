@@ -1,0 +1,47 @@
+Bait Intentions
+Copyright (c) 2026 Connor Haft
+
+The MIT License in the accompanying LICENSE file applies to the original work
+in this repository: payload.txt, README.md, and the documentation. It does not
+and cannot apply to the third-party components described below.
+
+
+THIRD-PARTY RIGHTS
+------------------
+
+DuckyScript and USB Rubber Ducky are trademarks and intellectual property of
+Hak5 LLC, and are subject to the Hak5 license agreement at
+https://hak5.org/license
+
+The readiness-detection logic this payload depends on comes from Hak5's
+PASSIVE_WINDOWS_DETECT extension, published in the official USB Rubber Ducky
+payload repository:
+
+    https://github.com/hak5/usbrubberducky-payloads
+
+That repository is published as Copyright (c) 2010 Hak5 LLC, all rights
+reserved.
+
+Accordingly, the extension source is NOT redistributed here. payload.txt
+refers to it by name only, on the line:
+
+    EXTENSION PASSIVE_WINDOWS_DETECT
+
+Users obtain the extension body themselves by accepting the PayloadStudio
+autocomplete for that line, which inlines the current official version at
+build time from their own licensed copy of the tooling. See the Setup section
+of README.md.
+
+Please do not vendor the extension body into this repository. Keeping it as a
+reference is deliberate: it avoids redistributing Hak5's code under a licence
+that is not ours to grant, and it means users always build against the current
+official version rather than a stale copy.
+
+
+DISCLAIMER
+----------
+
+This project is not affiliated with, endorsed by, or sponsored by Hak5 LLC.
+
+This is not legal advice. If you are publishing or distributing this under an
+organisation's name, confirm the arrangement with whoever handles that.
