@@ -1,0 +1,95 @@
+REM ==========================================================
+REM USB Drop Awareness - Self-Report Payload
+REM Targets: Windows and macOS | DuckyScript 3.0 (Ducky Mk II)
+REM ==========================================================
+
+REM ############ EDIT THESE THREE THINGS ############
+
+REM 1. YOUR TRAINING PORTAL
+REM    Opens in the machine default browser on both platforms.
+DEFINE SIGNUP_URL https://firm-training-program.com/signup
+
+REM 2. YOUR IT HELPDESK ADDRESS AND MESSAGE
+REM    Replace helpdesk@firm.com, and edit the subject= and body= text.
+REM      - spaces MUST be written %20 (a real space splits the argument)
+REM      - use %0A for a line break
+REM      - commas, periods and ! need no escaping
+REM      - every character is typed as a keystroke, so keep it short
+DEFINE REPORT_MAIL mailto:helpdesk@firm.com?subject=USB%20Baited!&body=Found%20a%20USB%20drive%20in%20the%20office%20and%20plugged%20it%20in.%20Reporting%20per%20policy.
+
+REM 3. TIMINGS (milliseconds)
+REM    Nearly the whole runtime. Tune down as far as still works, and
+REM    note Macs generally need longer than Windows here.
+DEFINE UI_WAIT 100
+DEFINE BROWSER_WAIT 2500
+DEFINE MAIL_WAIT 2000
+
+REM ############ NO EDITS NEEDED BELOW ############
+
+REM Enumerates as an Apple Aluminium Mini Keyboard. This is what stops
+REM macOS throwing the Keyboard Setup Assistant over the top of
+REM everything, which would block the whole payload. Windows accepts it
+REM happily via the generic HID driver.
+ATTACKMODE HID VID_05AC PID_021E
+LED_R
+
+REM Sets $_OS to WINDOWS or NOT_WINDOWS, and on Windows waits only as
+REM long as the host needs (~25ms). macOS does not report lock-key state
+REM back to the keyboard, so there it rides the extension 3000ms cap -
+REM that is the honest ceiling, no HID-side readiness signal exists.
+REM The full body belongs here: in PayloadStudio type the line below and
+REM accept the autocomplete to inline the official version (~40 lines).
+EXTENSION PASSIVE_WINDOWS_DETECT
+
+$_JITTER_ENABLED = FALSE
+
+REM ---- 1. Open the training portal signup page ----
+IF ($_OS == WINDOWS) THEN
+    GUI r
+    DELAY UI_WAIT
+    STRINGLN SIGNUP_URL
+ELSE
+    COMMAND SPACE
+    DELAY UI_WAIT
+    STRINGLN SIGNUP_URL
+END_IF
+DELAY BROWSER_WAIT
+
+REM Tab past username/password (SSO), then pick the third dropdown option.
+REM Adjust the DOWNARROW count if your form differs.
+TAB
+DOWNARROW
+DOWNARROW
+ENTER
+DELAY 500
+
+REM ---- 2. Compose the report ----
+REM Windows uses the Run dialog: the shell hands the mailto straight to
+REM the mail client, no browser permission prompt. macOS goes through the
+REM address bar of the window already open, because Spotlight does not
+REM reliably handle mailto URIs.
+IF ($_OS == WINDOWS) THEN
+    ALT F4
+    DELAY UI_WAIT
+    GUI r
+    DELAY UI_WAIT
+    STRINGLN REPORT_MAIL
+ELSE
+    COMMAND l
+    DELAY UI_WAIT
+    STRINGLN REPORT_MAIL
+END_IF
+DELAY MAIL_WAIT
+
+REM ---- 3. Send ----
+REM Deliberately NOT automated: the send shortcut differs per client and
+REM firing the wrong one could do something unintended. The message sits
+REM composed and the person clicks Send, which arguably lands the
+REM awareness lesson better anyway.
+REM Once you know the fleet, uncomment ONE line below:
+REM   Outlook on Windows    ALT s
+REM   Outlook for Mac       COMMAND ENTER
+REM   Apple Mail            COMMAND D
+REM   (capital D implicitly holds shift, giving Cmd+Shift+D)
+
+LED_G
