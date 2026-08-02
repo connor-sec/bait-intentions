@@ -2,6 +2,13 @@
 
 A USB Rubber Ducky payload for running honest USB drop tests (baiting).
 
+Maintained by [@connor-sec](https://github.com/connor-sec).
+
+<p align="center">
+    <img src="bait-intentions-logo.jpg" alt="Bait Intentions" width="400">
+</p>
+
+
 Place a few of these around the office. Someone picks one up, plugs it in, and instead of getting pwned they get signed up for security awareness training — and a note lands in the IT helpdesk queue saying so. That it, it types a URL, it drafts an email. No shells, no persistence, no exfil.
 
 ## What actually happens
