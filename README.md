@@ -9,13 +9,13 @@ Maintained by [@connor-sec](https://github.com/connor-sec).
 </p>
 
 
-Place a few of these around the office. Someone picks one up, plugs it in, and instead of getting pwned they get signed up for security awareness training — and a note lands in the IT helpdesk queue saying so. That it, it types a URL, it drafts an email. No shells, no persistence, no exfil.
+Place a few of these around the office. Someone picks one up, plugs it in, and instead of getting pwned they get signed up for security awareness training — and a note lands in the IT helpdesk queue saying so. That's it — it types a URL and drafts an email. No shells, no persistence, no exfil.
 
 ## What actually happens
 Someone plugs in the drive. In about three seconds:
 
 1. The Ducky figures out whether it's on Windows or macOS and waits only as long as that machine needs to be ready for keystrokes.
-2. It opens the default browser to your training portal's signup page and enrols the person.
+2. It opens the default browser to your training portal's signup page and enrolls the person.
 3. It closes the browser and drops a pre-filled email to your helpdesk into their mail client.
 4. It leaves that email sitting there, composed but unsent, for the person to read and send themselves.
 
@@ -23,7 +23,7 @@ Step 4 is deliberate, and we'll come back to it.
 
 ## Setup
 
-You need a [USB Rubber Ducky (Mk II)](https://shop.hak5.org/products/usb-rubber-ducky) and [PayloadStudio](https://payloadstudio.hak5.org) or [PayloadStudioPro](https://payloadstudio.hak5.org/pro/). 
+You need a [USB Rubber Ducky (Mk II)](https://shop.hak5.org/products/usb-rubber-ducky) and [PayloadStudio](https://payloadstudio.hak5.org) or [PayloadStudioPro](https://payloadstudio.hak5.org/pro/).
 
 1. Open `payload.txt` in PayloadStudio.
 2. Find the line that reads `EXTENSION PASSIVE_WINDOWS_DETECT`, retype it, and accept the autocomplete. This pulls in the official extension body, which is about forty lines that don't belong in version control. **The payload won't work without this step.**
@@ -66,7 +66,7 @@ Compiles to about 1 KB.
 ## Known limits
 
 **macOS doesn't get the fast start.**
-**It enumerates as an Apple keyboard.** 
+**It enumerates as an Apple keyboard.**
 **It doesn't press Send.** The send shortcut differs by mail client, and firing the wrong key combination into the wrong app is a good way to do something you didn't intend. Three options are commented at the bottom of the payload — uncomment one once you know what your fleet runs.
 
 It has been argued that leaving it unsent may be the better design regardless. Someone reading a pre-written "I plugged in a USB drive I found" email and clicking Send themselves is a sharper lesson than a message that quietly vanishes.
@@ -81,7 +81,7 @@ Give some thought to how the results get used, too. A drop test measures how eas
 
 ## Credits
 
-Built on DuckyScript 3.0. The readiness detection is Hak5's own [`PASSIVE_WINDOWS_DETECT`](https://github.com/hak5/usbrubberducky-payloads/tree/master/payloads/extensions) extension — worth reading [their writeup](https://shop.hak5.org/blogs/usb-rubber-ducky/detect-ready) on why the three second delay was never really necessary.
+Built on DuckyScript 3.0. The readiness detection is Hak5's own [`PASSIVE_WINDOWS_DETECT`](https://github.com/hak5/usbrubberducky-payloads/tree/master/payloads/extensions) extension — worth reading [their writeup](https://shop.hak5.org/blogs/usb-rubber-ducky/detect-ready) on why the three-second delay was never really necessary.
 
 ## License
 
