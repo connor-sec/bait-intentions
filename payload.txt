@@ -20,9 +20,17 @@ DEFINE REPORT_MAIL mailto:helpdesk@firm.com?subject=USB%20Baited!&body=Found%20a
 REM 3. TIMINGS (milliseconds)
 REM    Nearly the whole runtime. Tune down as far as still works, and
 REM    note Macs generally need longer than Windows here.
-DEFINE UI_WAIT 100
+REM    UI_WAIT is how long the Run dialog (GUI r) and Spotlight
+REM    (COMMAND SPACE) get to draw and take focus. Much under this and
+REM    the first characters of the URL are typed into the previous window.
+DEFINE UI_WAIT 300
 DEFINE BROWSER_WAIT 2500
 DEFINE MAIL_WAIT 2000
+REM    SUBMIT_WAIT is the pause after the form's Enter, before Windows
+REM    closes the browser or macOS types into the address bar. Shorter
+REM    than the submit actually takes aborts it on a slow network or an
+REM    SSO redirect. Raise this if the portal has not finished.
+DEFINE SUBMIT_WAIT 500
 
 REM ############ NO EDITS NEEDED BELOW ############
 
@@ -47,21 +55,28 @@ REM ---- 1. Open the training portal signup page ----
 IF ($_OS == WINDOWS) THEN
     GUI r
     DELAY UI_WAIT
+    REM Run executes the text box on Enter. It does not rank a search
+    REM hit the way Spotlight does, so STRINGLN is the reliable form.
     STRINGLN SIGNUP_URL
 ELSE
     COMMAND SPACE
     DELAY UI_WAIT
-    STRINGLN SIGNUP_URL
+    REM Spotlight ranks hits after typing stops. Enter in the same beat
+    REM as the last character (what STRINGLN does) often runs a web
+    REM search instead of opening the URL. Pause, then Enter.
+    STRING SIGNUP_URL
+    DELAY 300
+    ENTER
 END_IF
 DELAY BROWSER_WAIT
 
-REM Tab past username/password (SSO), then pick the third dropdown option.
-REM Adjust the DOWNARROW count if your form differs.
+REM Placeholder the operator retunes for their own portal. As written,
+REM one TAB moves a single field, then two DOWNARROWs, then ENTER.
 TAB
 DOWNARROW
 DOWNARROW
 ENTER
-DELAY 500
+DELAY SUBMIT_WAIT
 
 REM ---- 2. Compose the report ----
 REM Windows uses the Run dialog: the shell hands the mailto straight to
@@ -89,7 +104,6 @@ REM awareness lesson better anyway.
 REM Once you know the fleet, uncomment ONE line below:
 REM   Outlook on Windows    ALT s
 REM   Outlook for Mac       COMMAND ENTER
-REM   Apple Mail            COMMAND D
-REM   (capital D implicitly holds shift, giving Cmd+Shift+D)
+REM   Apple Mail            COMMAND SHIFT d
 
 LED_G
