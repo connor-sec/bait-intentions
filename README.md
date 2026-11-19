@@ -16,7 +16,7 @@ Someone plugs in the drive. In about three seconds:
 
 1. The Ducky figures out whether it's on Windows or macOS and waits only as long as that machine needs to be ready for keystrokes.
 2. It opens the default browser to your training portal's signup page and enrolls the person.
-3. It closes the browser and drops a pre-filled email to your helpdesk into their mail client.
+3. It drops a pre-filled email to your helpdesk into their mail client. On Windows that starts by closing the browser with Alt+F4, then opening the `mailto:` link from the Run dialog. On macOS the browser stays open: Command-L reuses the open tab's address bar, and the `mailto:` is typed there.
 4. It leaves that email sitting there, composed but unsent, for the person to read and send themselves.
 
 Step 4 is deliberate, and we'll come back to it.
@@ -44,9 +44,9 @@ Everything you'll want to touch is at the top of the file under a big `EDIT THES
 - Commas, periods and exclamation marks are fine as-is.
 - Keep it short. Every character in that line is a keystroke the Ducky physically types, so a chatty email is a slow payload.
 
-**Timings.** `BROWSER_WAIT` and `MAIL_WAIT` are almost the entire runtime. Tune them down until things break on your slowest machine, then back off a little. Macs generally need more than Windows here.
+**Timings.** `BROWSER_WAIT` and `MAIL_WAIT` are almost the entire runtime. Tune them down until things break on your slowest machine, then back off a little. Macs generally need more than Windows here. `UI_WAIT` (default 300ms) is the pause for the Run dialog or Spotlight to take focus before the URL is typed; shorter than that and the first characters go to the previous window. On macOS the URL is then typed, held for 300ms, and confirmed with Enter, so Spotlight can resolve it as a link instead of firing a web search. The Windows Run dialog executes the string as typed, so that extra pause is not there. `SUBMIT_WAIT` is the pause after the form's Enter before the payload leaves the page. Raise it if a slow network or an SSO redirect is still in flight.
 
-You'll also want to check the signup form section. It assumes tabbing past a username and password field for SSO, then picking the third option in a dropdown. If your form is shaped differently, adjust the `DOWNARROW` count.
+You'll also want to check the signup form section. It is a placeholder: one Tab (one field), two Down arrows, then Enter. Retune those keystrokes for your own portal. On stock macOS that Tab may never land on the control you meant; see Known limits.
 
 ## Why it's fast
 
@@ -67,6 +67,8 @@ Compiles to about 1 KB.
 
 **macOS doesn't get the fast start.**
 **It enumerates as an Apple keyboard.**
+**Windows and macOS only.** `PASSIVE_WINDOWS_DETECT` sets `$_OS` to `WINDOWS` or `NOT_WINDOWS` and nothing else. The other branch assumes macOS and sends `COMMAND` shortcuts. A Linux or ChromeOS host is `NOT_WINDOWS`, so it receives those macOS keystrokes and the payload misfires.
+**The form-fill can silently no-op on stock macOS.** The block is one Tab, two Down arrows, and Enter, and it is a placeholder for the operator's own portal. Keyboard navigation is off by default (System Settings > Keyboard), and so is Full Keyboard Access (System Settings > Accessibility > Keyboard). With both off, Safari's Tab order is text fields and pop-up menus; buttons and other controls are skipped, so Tab never reaches them and the keystrokes that follow do nothing visible. Apple's Safari shortcut guide counts a pop-up menu — a `<select>` — in that default order, and counts buttons out of it until Keyboard navigation is on. Safari's own "Press Tab to highlight each item on a webpage" (Settings > Advanced) is also off by default. Chrome on macOS tabs through form controls without the system switch. Test the sequence on the browser your fleet actually uses.
 **It doesn't press Send.** The send shortcut differs by mail client, and firing the wrong key combination into the wrong app is a good way to do something you didn't intend. Three options are commented at the bottom of the payload — uncomment one once you know what your fleet runs.
 
 It has been argued that leaving it unsent may be the better design regardless. Someone reading a pre-written "I plugged in a USB drive I found" email and clicking Send themselves is a sharper lesson than a message that quietly vanishes.
